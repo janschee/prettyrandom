@@ -52,6 +52,7 @@ class PrettyRandom():
         return random.choice(pool)
 
     def __call__(self, blocksize: int, length: int) -> str:
+        assert length >= blocksize, f"Length ({length}) must be larger or equal than the block size ({blocksize})!"
         num_blocks = length // blocksize
         rest = length % blocksize
         res = ""
@@ -73,7 +74,7 @@ class Test(unittest.TestCase):
     def test_length(self) -> None:
         prettyrandom = PrettyRandom()
         for length in range(1, 100):
-            for blocksize in range(1, 10):
+            for blocksize in range(1, length+1):
                 x: str = prettyrandom(blocksize, length)
                 x = x.replace(" ","") #remove spaces
         self.assertEqual(len(x), length)
@@ -81,14 +82,14 @@ class Test(unittest.TestCase):
     def test_blocksize(self) -> None:
         prettyrandom = PrettyRandom()
         for length in range(1, 100):
-            for blocksize in range(1, 10):
+            for blocksize in range(1, length+1):
                 x: str = prettyrandom(blocksize, length)
                 x = x.strip() #remove whitespaces
                 blocks: List[str] = x.split(" ")
-                if length % blocksize == 0: blocks = blocks[:-1]
+                if len(blocks) > 1 and len(blocks[-1]) != len(blocks[-2]): blocks = blocks[:-1]
                 print(blocks)
                 for b in blocks:
-                    self.assertEqual(len(b), length)
+                    self.assertEqual(len(b), blocksize)
 
 
 if __name__ == "__main__":
@@ -96,4 +97,6 @@ if __name__ == "__main__":
     blocksize = 4
     length = 22
     print(prettyrandom(blocksize, length))
+
+
 # %%
