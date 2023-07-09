@@ -18,39 +18,29 @@ class PrettyRandom():
 
     def config(self, use_numbers: bool, use_lowercase: bool, use_uppercase: bool) -> None:
         assert (use_numbers or use_lowercase or use_uppercase) == True, "At least one of the options has to be set to True."
-        self.character_set = []
-        if use_numbers: self.character_set += self.numbers
-        if use_lowercase: self.character_set += self.lowercase
-        if use_uppercase: self.character_set += self.uppercase
+        self.character_set = (self.numbers * use_numbers + self.lowercase * use_lowercase + self.uppercase * use_uppercase)
 
     def repeat(self, char1: str, char2: str, blocksize: int) -> str:
         char: str = random.choice([char1, char2])
         return str(char) * blocksize
     
     def alternate(self, char1: str, char2: str, blocksize: int) -> str:
-        res = ""
-        for i in range(blocksize):
-            res += str(char1) if i % 2 == 0 else str(char2)
-        return res
+        return "".join([str(char1) if i % 2 == 0 else str(char2) for i in range(blocksize)])
     
     def pairs(self, char1: str, char2: str, blocksize: int) -> str:
         res = (str(char1) * 2 + str(char2) * 2) * (blocksize // 4 + 1)
-        res = res[:blocksize] 
-        return res
+        return res[:blocksize] 
     
     def outlier(self, char1: str, char2: str, blocksize: int) -> str:
         collection = [str(char1)] * blocksize
         position = random.randint(0,blocksize - 1)
         collection[position] = str(char2)
-        res = ""
-        for c in collection:
-            res += c
-        return res
+        return "".join(collection)
     
     def zerofill(self, char1: str, char2: str, blocksize: int) -> str:
         char: str = random.choice([char1, char2])
         res = str(char).zfill(blocksize)
-        return res if random.randint(0,10) % 2 == 0 else res [-1::-1]
+        return res if random.randint(0,10) % 2 == 0 else res[-1::-1]
     
     def random_rule(self) -> Callable:
         return random.choice(self.rules)
@@ -59,21 +49,13 @@ class PrettyRandom():
         assert length >= blocksize, f"Length ({length}) must be larger or equal than the block size ({blocksize})!"
         num_blocks = length // blocksize
         rest = length % blocksize
-        res = ""
 
         # Generate blocks
-        for _ in range(num_blocks):
-            randchar1 = random.choice(self.character_set)
-            randchar2 = random.choice(self.character_set)
-            rule = self.random_rule()
-            res += rule(randchar1, randchar2, blocksize)
-            res += " "
+        blocks = [self.random_rule()(random.choice(self.character_set), random.choice(self.character_set), blocksize) for _ in range(num_blocks)]
+        res = " ".join(blocks)
 
         # Fill up remaining characters with alternate patterns
-        if rest != 0:
-            randchar1 = random.choice(self.character_set)
-            randchar2 = random.choice(self.character_set)
-            res += self.alternate(randchar1, randchar2, rest)
+        if rest != 0: res += " " + self.alternate(random.choice(self.character_set), random.choice(self.character_set), rest)
         return str(res)
         
 
@@ -94,13 +76,12 @@ class Test(unittest.TestCase):
                 x = x.strip() #remove whitespaces
                 blocks: List[str] = x.split(" ")
                 if len(blocks) > 1 and len(blocks[-1]) != len(blocks[-2]): blocks = blocks[:-1]
-                for b in blocks:
-                    self.assertEqual(len(b), blocksize)
+                for b in blocks: self.assertEqual(len(b), blocksize)
 
 
 if __name__ == "__main__":
     prettyrandom = PrettyRandom()
-    prettyrandom.config(True, True, True)
+    prettyrandom.config(True, False, True)
     blocksize = 4
     length = 22
     print(prettyrandom(blocksize, length))
