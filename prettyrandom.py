@@ -41,7 +41,7 @@ class PrettyRandom():
 
     def repeat(self, char1: str, char2: str, blocksize: int) -> str:
         """
-        Generates a repeated pattern of characters based on random selection between two characters.
+        Generates a repeated pattern of characters based on random selection between two characters (AAAA).
 
         Args:
             char1: The first character to be used in the pattern.
@@ -141,8 +141,10 @@ class PrettyRandom():
 
         Raises:
             AssertionError: If the length is smaller than the blocksize.
+            AssertionError: If either the length or blocksize is zero.
         """
-        assert length >= blocksize, f"Length ({length}) must be larger or equal than the block size ({blocksize})!"
+        assert length > 0 and blocksize > 0, f"Length and Blocksize must be larger than zero, but got Length ({length}) and Blocksize ({blocksize}))!"
+        assert length >= blocksize, f"Length ({length}) must be larger or equal than the Blocksize ({blocksize})!"
         num_blocks = length // blocksize
         rest = length % blocksize
 
@@ -155,7 +157,12 @@ class PrettyRandom():
         return str(res)
         
 
+
 class Test(unittest.TestCase):
+    def setUp(self) -> None:
+        self.prettyrandom = PrettyRandom()
+
+
     def test_length(self) -> None:
         """
         Test case to ensure that the generated pretty random string has the correct length.
@@ -163,11 +170,10 @@ class Test(unittest.TestCase):
         Iterates over different lengths and block sizes, generating pretty random strings and removing spaces.
         Asserts that the length of each string matches the expected length.
         """
-        prettyrandom = PrettyRandom()
         for length in range(1, 100):
             for blocksize in range(1, length+1):
-                x: str = prettyrandom(blocksize, length)
-                x = x.replace(" ","") #remove spaces
+                x: str = self.prettyrandom(blocksize, length)
+                x = x.replace(" ","") 
         self.assertEqual(len(x), length)
 
 
@@ -178,11 +184,10 @@ class Test(unittest.TestCase):
         Iterates over different lengths and block sizes, generating pretty random strings and splitting them into blocks.
         Removes leading/trailing whitespaces and checks if each block has the expected block size.
         """
-        prettyrandom = PrettyRandom()
         for length in range(1, 100):
             for blocksize in range(1, length+1):
-                x: str = prettyrandom(blocksize, length)
-                x = x.strip() #remove whitespaces
+                x: str = self.prettyrandom(blocksize, length)
+                x = x.strip() 
                 blocks: List[str] = x.split(" ")
                 if len(blocks) > 1 and len(blocks[-1]) != len(blocks[-2]): blocks = blocks[:-1]
                 for b in blocks: self.assertEqual(len(b), blocksize)
@@ -192,10 +197,43 @@ if __name__ == "__main__":
 
     # -------- Example 1 --------
     prettyrandom = PrettyRandom()
-    print(prettyrandom(blocksize = 4, length = 22))
+
+    # Configuring the character set to include numbers and uppercase letters
+    prettyrandom.config(use_numbers=True, use_lowercase=False, use_uppercase=True)
+
+    # Generating a pretty random string with a block size of 4 and a length of 22
+    result = prettyrandom(blocksize=4, length=22)
+    print(result)
     # Output: LWLW 6464 II88 QQ4Q 4S4S X0
+    
 
     # -------- Example 2 --------
-    prettyrandom.config(use_numbers=True, use_lowercase=False, use_uppercase=False)
-    print(prettyrandom(blocksize = 3, length = 10))
-    # Output: 886 515 333 4
+    prettyrandom = PrettyRandom()
+
+    # Configuring the character set to include lowercase letters only
+    prettyrandom.config(use_numbers=False, use_lowercase=True, use_uppercase=False)
+
+    # Generating a pretty random string with a block size of 3 and a length of 12
+    result = prettyrandom(blocksize=3, length=12)
+    print(result)
+    # Output: rrh wvw rwr ono
+
+
+    # -------- Example 3 --------
+    prettyrandom = PrettyRandom()
+
+    # Configuring the character set to include numbers and uppercase letters
+    prettyrandom.config(use_numbers=True, use_lowercase=False, use_uppercase=True)
+
+    # Generating a pretty random string with block sizes ranging from 1 to 5 and a fixed length of 20
+    for blocksize in range(1, 6):
+        result = prettyrandom(blocksize=blocksize, length=20)
+        print(f"Block Size: {blocksize}, Result: {result}")
+
+
+    # -------- Example 4 --------
+    # >>> python3 -m unittest prettyrandom.py
+    # Output: Ran 2 tests in 0.085s OK
+
+
+# %%
