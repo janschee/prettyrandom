@@ -36,7 +36,8 @@ class PrettyRandom():
 
         # Merge default values with provided keyword arguments
         config = {**default_values, **kwargs}
-        assert (config['use_numbers'] or config['use_lowercase'] or config['use_uppercase']) == True, "At least one of the options has to be set to True."
+        if not (config['use_numbers'] or config['use_lowercase'] or config['use_uppercase']):
+            raise ValueError("At least one of the options has to be set to True.")
 
         # Use the config dictionary to set up the character set
         self.character_set = (
@@ -151,8 +152,12 @@ class PrettyRandom():
             AssertionError: If the length is smaller than the blocksize.
             AssertionError: If either the length or blocksize is zero.
         """
-        assert length > 0 and blocksize > 0, f"Length and Blocksize must be larger than zero, but got Length ({length}) and Blocksize ({blocksize}))!"
-        assert length >= blocksize, f"Length ({length}) must be larger or equal than the Blocksize ({blocksize})!"
+
+        if length <= 0 or blocksize <= 0:
+            raise ValueError("Length and Blocksize must be larger than zero.")
+        if length < blocksize:
+            raise ValueError("Length must be larger or equal to the Blocksize.")
+
         num_blocks = length // blocksize
         rest = length % blocksize
 
@@ -207,7 +212,7 @@ if __name__ == "__main__":
     prettyrandom = PrettyRandom()
 
     # Generating a pretty random string with a block size of 4 and a length of 22
-    result = prettyrandom(blocksize=4, length=22)
+    result = prettyrandom(blocksize=4, length=12)
     print(result)
     # Output: LWLW 6464 II88 QQ4Q 4S4S X0
     
