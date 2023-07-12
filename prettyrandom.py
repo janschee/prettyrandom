@@ -1,31 +1,16 @@
 #%%
-from typing import List, Callable
+from typing import List, Callable, Dict
 import random
 import unittest
 
 
 
 class PrettyRandom():
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         """
-        Initializes an instance of the PrettyRandom class.
-        Sets up the available rules and character sets.
+        Initializes an instance of the PrettyRandom class and
+        sets up the available rules and character sets.
         By default, the character set includes numbers and uppercase letters.
-        """
-        self.rules: List[Callable] = [self.repeat, self.alternate, self.pairs, self.outlier, self.zerofill]
-        self.numbers : List[str] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        self.lowercase : List[str] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-        self.uppercase : List[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-
-        # Default behavior: The character set includes numbers and uppercase letters only.
-        # This can be changed by calling the config function.
-        self.character_set: List[str] = []
-        self.config(use_numbers=True, use_lowercase=False, use_uppercase=True)
-
-
-    def config(self, use_numbers: bool, use_lowercase: bool, use_uppercase: bool) -> None:
-        """
-        Configures the character set to be used for generating random strings.
         
         Args:
             use_numbers: A boolean indicating whether to include numbers in the character set.
@@ -35,8 +20,31 @@ class PrettyRandom():
         Raises:
             AssertionError: If none of the options (numbers, lowercase, uppercase) are set to True.
         """
-        assert (use_numbers or use_lowercase or use_uppercase) == True, "At least one of the options has to be set to True."
-        self.character_set = (self.numbers * use_numbers + self.lowercase * use_lowercase + self.uppercase * use_uppercase)
+
+        self.rules: List[Callable] = [self.repeat, self.alternate, self.pairs, self.outlier, self.zerofill]
+        self.numbers : List[str] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        self.lowercase : List[str] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        self.uppercase : List[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+        # Define default values for keyword arguments
+        # Default behavior: The character set includes numbers and uppercase letters only.
+        default_values: Dict[str, bool] = {
+            'use_numbers': True,
+            'use_lowercase': False,
+            'use_uppercase': True
+        }
+
+        # Merge default values with provided keyword arguments
+        config = {**default_values, **kwargs}
+        assert (config['use_numbers'] or config['use_lowercase'] or config['use_uppercase']) == True, "At least one of the options has to be set to True."
+
+        # Use the config dictionary to set up the character set
+        self.character_set = (
+            self.numbers * config['use_numbers'] +
+            self.lowercase * config['use_lowercase'] +
+            self.uppercase * config['use_uppercase']
+        )
+
 
 
     def repeat(self, char1: str, char2: str, blocksize: int) -> str:
@@ -198,9 +206,6 @@ if __name__ == "__main__":
     # -------- Example 1 --------
     prettyrandom = PrettyRandom()
 
-    # Configuring the character set to include numbers and uppercase letters
-    prettyrandom.config(use_numbers=True, use_lowercase=False, use_uppercase=True)
-
     # Generating a pretty random string with a block size of 4 and a length of 22
     result = prettyrandom(blocksize=4, length=22)
     print(result)
@@ -208,10 +213,8 @@ if __name__ == "__main__":
     
 
     # -------- Example 2 --------
-    prettyrandom = PrettyRandom()
-
-    # Configuring the character set to include lowercase letters only
-    prettyrandom.config(use_numbers=False, use_lowercase=True, use_uppercase=False)
+    # Configuring the character set to only include lowercase letters
+    prettyrandom = PrettyRandom(use_numbers=False, use_lowercase=True, use_uppercase=False)
 
     # Generating a pretty random string with a block size of 3 and a length of 12
     result = prettyrandom(blocksize=3, length=12)
@@ -221,9 +224,6 @@ if __name__ == "__main__":
 
     # -------- Example 3 --------
     prettyrandom = PrettyRandom()
-
-    # Configuring the character set to include numbers and uppercase letters
-    prettyrandom.config(use_numbers=True, use_lowercase=False, use_uppercase=True)
 
     # Generating a pretty random string with block sizes ranging from 1 to 5 and a fixed length of 20
     for blocksize in range(1, 6):
