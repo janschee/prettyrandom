@@ -21,11 +21,6 @@ class PrettyRandom():
             AssertionError: If none of the options (numbers, lowercase, uppercase) are set to True.
         """
 
-        self.rules: List[Callable] = [self.repeat, self.alternate, self.pairs, self.outlier, self.zerofill]
-        self.numbers : List[str] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-        self.lowercase : List[str] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-        self.uppercase : List[str] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-
         # Define default values for keyword arguments
         # Default behavior: The character set includes numbers and uppercase letters only.
         default_values: Dict[str, bool] = {
@@ -39,13 +34,26 @@ class PrettyRandom():
         if not (config['use_numbers'] or config['use_lowercase'] or config['use_uppercase']):
             raise ValueError("At least one of the options has to be set to True.")
 
-        # Use the config dictionary to set up the character set
-        self.character_set = (
-            self.numbers * config['use_numbers'] +
-            self.lowercase * config['use_lowercase'] +
-            self.uppercase * config['use_uppercase']
-        )
+        # Initialize rules
+        self.rules: Dict[str, Callable] = {
+            'repeat': self.repeat,
+            'alternate': self.alternate,
+            'pairs': self.pairs,
+            'outlier': self.outlier,
+            'zerofill': self.zerofill
+        }
 
+        # Initialize sets
+        self.numbers: set[str] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'}
+        self.lowercase: set[str] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'}
+        self.uppercase: set[str] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}
+
+        # Use set operations to construct the character set
+        self.character_set = list(
+            self.numbers if config['use_numbers'] else set() |
+            self.lowercase if config['use_lowercase'] else set() |
+            self.uppercase if config['use_uppercase'] else set()
+        )
 
 
     def repeat(self, char1: str, char2: str, blocksize: int) -> str:
@@ -134,7 +142,7 @@ class PrettyRandom():
         """
         Randomly selects a rule function from the available rules.
         """
-        return random.choice(self.rules)
+        return self.rules[random.choice(list(self.rules.keys()))]
 
 
     def __call__(self, blocksize: int, length: int) -> str:
