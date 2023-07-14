@@ -22,7 +22,7 @@ class PrettyRandom():
         """
 
         # Define default values for keyword arguments
-        # Default behavior: The character set includes numbers and uppercase letters only.
+        # By default, the character set includes numbers and uppercase letters only.
         default_values: Dict[str, bool] = {
             'use_numbers': True,
             'use_lowercase': False,
@@ -34,7 +34,7 @@ class PrettyRandom():
         if not (config['use_numbers'] or config['use_lowercase'] or config['use_uppercase']):
             raise ValueError("At least one of the options has to be set to True.")
 
-        # Initialize rules
+        # Available pattern generation rules
         self.rules: Dict[str, Callable] = {
             'repeat': self.repeat,
             'alternate': self.alternate,
@@ -99,8 +99,8 @@ class PrettyRandom():
         Returns:
             A string representing the generated pattern of repeating character pairs.
         """
-        res = (str(char1) * 2 + str(char2) * 2) * (blocksize // 4 + 1)
-        return res[:blocksize] 
+        block: str = (str(char1) * 2 + str(char2) * 2) * (blocksize // 4 + 1)
+        return block[:blocksize] 
     
 
     def outlier(self, char1: str, char2: str, blocksize: int) -> str:
@@ -115,10 +115,9 @@ class PrettyRandom():
         Returns:
             A string representing the generated pattern with an outlier character.
         """
-        collection = [str(char1)] * blocksize
-        position = random.randint(0,blocksize - 1)
-        collection[position] = str(char2)
-        return "".join(collection)
+        block: List[str] = [str(char1)] * blocksize
+        block[random.randint(0, blocksize-1)] = str(char2)
+        return "".join(block)
     
 
     def zerofill(self, char1: str, char2: str, blocksize: int) -> str:
@@ -134,8 +133,8 @@ class PrettyRandom():
             A string representing the generated pattern with zero-filled characters.
         """
         char: str = random.choice([char1, char2])
-        res = str(char).zfill(blocksize)
-        return res if random.randint(0,10) % 2 == 0 else res[-1::-1]
+        block: str = str(char).zfill(blocksize)
+        return block if random.randint(0,10) % 2 == 0 else block[-1::-1]
     
 
     def random_rule(self) -> Callable:
@@ -166,16 +165,16 @@ class PrettyRandom():
         if length < blocksize:
             raise ValueError("Length must be larger or equal to the Blocksize.")
 
-        num_blocks = length // blocksize
-        rest = length % blocksize
+        num_blocks: int = length // blocksize
+        rest: int = length % blocksize
 
         # Generate complete blocks
-        blocks = [self.random_rule()(random.choice(self.character_set), random.choice(self.character_set), blocksize) for _ in range(num_blocks)]
-        res = " ".join(blocks)
+        blocks: List[str] = [self.random_rule()(random.choice(self.character_set), random.choice(self.character_set), blocksize) for _ in range(num_blocks)]
+        output: str = " ".join(blocks)
 
         # Fill up remaining characters with alternate pattern
-        if rest != 0: res += " " + self.alternate(random.choice(self.character_set), random.choice(self.character_set), rest)
-        return str(res)
+        if rest != 0: output += " " + self.alternate(random.choice(self.character_set), random.choice(self.character_set), rest)
+        return str(output)
         
 
 
