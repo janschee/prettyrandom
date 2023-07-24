@@ -50,9 +50,9 @@ class PrettyRandom():
 
         # Use set operations to construct the character set
         self.character_set = list(
-            self.numbers if config['use_numbers'] else set() |
-            self.lowercase if config['use_lowercase'] else set() |
-            self.uppercase if config['use_uppercase'] else set()
+            (self.numbers if config['use_numbers'] else set()) |
+            (self.lowercase if config['use_lowercase'] else set()) |
+            (self.uppercase if config['use_uppercase'] else set())
         )
 
 
@@ -246,6 +246,14 @@ if __name__ == "__main__":
     # -------- Example 4 --------
     # >>> python3 -m unittest prettyrandom.py
     # Output: Ran 2 tests in 0.085s OK
+
+
+# %%
+
+prettyrandom_ = PrettyRandom(use_numbers=True, use_lowercase=False, use_uppercase=True)
+
+for _ in range(10):
+    print(prettyrandom_(blocksize=4, length=22))
 
 
 # %%
