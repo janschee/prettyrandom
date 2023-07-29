@@ -219,7 +219,7 @@ if __name__ == "__main__":
     prettyrandom = PrettyRandom()
 
     # Generating a pretty random string with a block size of 4 and a length of 22
-    result = prettyrandom(blocksize=4, length=12)
+    result = prettyrandom(blocksize=4, length=22)
     print(result)
     # Output: LWLW 6464 II88 QQ4Q 4S4S X0
     
@@ -246,14 +246,6 @@ if __name__ == "__main__":
     # -------- Example 4 --------
     # >>> python3 -m unittest prettyrandom.py
     # Output: Ran 2 tests in 0.085s OK
-
-
-# %%
-
-prettyrandom_ = PrettyRandom(use_numbers=True, use_lowercase=False, use_uppercase=True)
-
-for _ in range(10):
-    print(prettyrandom_(blocksize=4, length=22))
 
 
 # %%
