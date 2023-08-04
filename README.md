@@ -2,7 +2,7 @@
 
 ## Generate Aesthetically Pleasing and User-Friendly Numbers or Identifiers.
 
-Have you ever wanted to generate random numbers for a project while ensuring they look good? If so, you're not alone! Welcome to PrettyRandom, a number generator designed to enhance the user experience by providing visually appealing numbers for various purposes like generating User-IDs, ticket numbers, order numbers, card numbers, and more.
+Have you ever wanted to generate random numbers for a project while ensuring they look good? If so, you're not alone! Welcome to PrettyRandom, a number generator designed to enhance the user experience by providing visually appealing numbers for various purposes like generating user-IDs, ticket numbers, order numbers, card numbers, and more.
 
 ## Getting Started
 To begin using PrettyRandom, follow these steps:
